@@ -13,18 +13,20 @@ This project demonstrates how to build, deploy, interact with, and upgrade a sta
 - State proofs
 - Incrementing stored state
 - Reading stored state
+- Resetting stored state
 - Emitting events
 - Upgrading a deployed program
 
 ## What We Built
 
-The program implements three instructions:
+The program implements four instructions:
 
 | Instruction | Value | Purpose |
 |---|---:|---|
 | Create | `0` | Creates and initializes the counter account |
 | Increment | `1` | Increases the counter by 1 |
 | Read | `2` | Reads the stored counter value |
+| Reset | `3` | Sets the counter back to `0` |
 
 The counter is stored as an 8-byte unsigned integer in a program-owned account.
 
@@ -90,6 +92,17 @@ The emitted event contained:
 which represents the stored counter value `2`.
 
 This confirmed that the program upgrade preserved the existing on-chain state.
+
+The RESET instruction was then executed successfully, changing the counter from `2` back to `0`. A final READ confirmed the stored value was `0`.
+
+The complete verified flow was:
+
+```text
+CREATE → 0 → INCREMENT → 1 → INCREMENT → 2
+        → UPGRADE → 2 → RESET → 0 → READ → 0
+```
+
+The RESET instruction emits the new counter value as an event.
 
 ## Prerequisites
 
@@ -188,6 +201,32 @@ thru --json account info <COUNTER_PDA>
 ```
 
 The counter is stored as an 8-byte unsigned integer.
+
+## Reset
+
+Instruction:
+
+```text
+030000000200
+```
+
+Execute:
+
+```bash
+thru --json txn execute --readwrite-accounts <COUNTER_PDA> <PROGRAM_ADDRESS> 030000000200
+```
+
+The RESET instruction sets the stored counter value back to `0`.
+
+## Read After Reset
+
+Run the READ instruction again:
+
+```bash
+thru --json txn execute --readwrite-accounts <COUNTER_PDA> <PROGRAM_ADDRESS> 020000000200
+```
+
+A successful event containing `0000000000000000` confirms that the counter is `0`.
 
 ## Upgrade
 

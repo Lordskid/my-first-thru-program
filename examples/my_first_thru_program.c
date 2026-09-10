@@ -5,6 +5,7 @@
 #define INSTRUCTION_CREATE    0U
 #define INSTRUCTION_INCREMENT 1U
 #define INSTRUCTION_READ      2U
+#define INSTRUCTION_RESET     3U
 
 /* Persistent state stored in the program-owned counter account. */
 typedef struct __attribute__((packed)) {
@@ -32,6 +33,7 @@ typedef struct __attribute__((packed)) {
  *   0 = create counter account
  *   1 = increment counter
  *   2 = read counter
+ *   3 = reset counter
  */
 TSDK_ENTRYPOINT_FN void
 start(void) {
@@ -176,6 +178,49 @@ start(void) {
         if (counter == 0) {
             tsdk_revert(17UL);
         }
+
+        tsys_emit_event(
+            (uchar const *)&counter->counter_value,
+            sizeof(ulong)
+        );
+
+        tsdk_return(TSDK_SUCCESS);
+    }
+
+    if (instruction_type == INSTRUCTION_RESET) {
+
+        if (data_size != sizeof(counter_args_t)) {
+            tsdk_revert(18UL);
+        }
+
+        counter_args_t const *args =
+            (counter_args_t const *)data;
+
+        if (!tsdk_is_account_idx_valid(args->account_index)) {
+            tsdk_revert(19UL);
+        }
+
+        if (!tsdk_is_account_owned_by_current_program(
+                args->account_index)) {
+            tsdk_revert(20UL);
+        }
+
+        ulong result =
+            tsys_set_account_data_writable(args->account_index);
+
+        if (result != TSDK_SUCCESS) {
+            tsdk_revert(21UL);
+        }
+
+        counter_account_t *counter =
+            (counter_account_t *)
+            tsdk_get_account_data_ptr(args->account_index);
+
+        if (counter == 0) {
+            tsdk_revert(22UL);
+        }
+
+        counter->counter_value = 0UL;
 
         tsys_emit_event(
             (uchar const *)&counter->counter_value,
