@@ -104,6 +104,30 @@ CREATE → 0 → INCREMENT → 1 → INCREMENT → 2
 
 The RESET instruction emits the new counter value as an event.
 
+## Verified Transactions
+
+The following transactions were successfully executed on Thru Alphanet:
+
+| Operation | Result |
+|---|---|
+| CREATE | Counter initialized to `0` |
+| INCREMENT #1 | Counter changed to `1` |
+| INCREMENT #2 | Counter changed to `2` |
+| UPGRADE | Program upgraded with state preserved at `2` |
+| RESET | Counter changed to `0` |
+| READ | Final state confirmed as `0` |
+
+Transaction signatures:
+
+- CREATE: `tsUaf7q1swWn_mgNigC3dlkD_3K4bnn76wFj31NXhrDWnFHFSCCXakIVoFIMV5vBEtMK4HxExhvHrzC_TCIuQnCx0y`
+- INCREMENT #1: `tsuESDmehlgChZelbdGqDcB2qpKMowUoARm94pqBZluSbMCKNuu4zxDtegcCl8a521fZaXNo79M-XNzfgXy3YsBR9-`
+- INCREMENT #2: `tshbA_NGQM-OVPatGyTmPwVdHXq-DUR0rvTCCTyVHcbP_hVOGNdaSH2zh1qukKHyEf06kV6NZ7G2T51US_tDBIBSIg`
+- POST-UPGRADE READ: `ts409axXS2HJYKYZva4_xIGUGrlpaPqmG1jNRB7rAg-MwdFKP7rnIfuGc2BiXjbW4nSutq-o2z09enhftpVZbtASI2`
+- RESET: `tsX0DhJazVqmPIlJ5CkxqilwRomyubxHjfgATeljyggzzoF500eIs_1LQJIiC3Ik9Wkx7btRIWBi4jP2_eSOPACBxy`
+- Final READ: `tsCAVOT9ObAALv0vfFeqGJhrwhUYTwBp4bZTzZVDesvxA2zmDvJx_G1KT2Z8zSoeQeFEqPQh8yQ-DLn-4FIcJkBB5i`
+
+All listed transactions completed successfully with `execution_result: 0` and `vm_error: 0`.
+
 ## Prerequisites
 
 Install the Thru toolchain and C SDK:
